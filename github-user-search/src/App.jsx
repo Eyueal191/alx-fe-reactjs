@@ -1,50 +1,65 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "./components/Search";
 import UserCard from "./components/UserCard";
-import GetUserData from "./services/githubservice.js"; // Ensure file name is correct
+import GetUserData from "./services/githubService.js"; // Ensure the file exists
 
 function App() {
-  const [username, setUsername] = useState(""); // Default to an empty string
-  const [user, setUser] = useState(null); // Set initial user state to null
-  const [error, setError] = useState(null); // Set initial error state to null
+  const [username, setUsername] = useState(""); // Input username
+  const [user, setUser] = useState(null); // Fetched user data
+  const [error, setError] = useState(null); // Error handling
+  const [loading, setLoading] = useState(false); // Loading indicator
 
   useEffect(() => {
-    if (!username) return; // Prevent calling API if username is empty
+    if (!username.trim()) {
+      setUser(null);
+      setError(null);
+      return;
+    }
 
-    const getData = async () => {
+    const fetchUserData = async () => {
+      setLoading(true);
       try {
-        const data = await GetUserData(username); // Fetch data from service
-        setUser(data); // Set user data
-        setError(null); // Reset previous errors
+        const data = await GetUserData(username);
+        setUser(data);
+        setError(null);
       } catch (err) {
-        setError("Oops! We couldn't find the user."); // Set error state
-        setUser(null); // Clear user data on error
+        setError(`User "${username}" not found.`);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    getData(); // Call function to fetch data
-  }, [username]); // Re-run effect when username changes
+    fetchUserData();
+  }, [username]);
+
+  const handleClear = () => {
+    setUsername("");
+    setUser(null);
+    setError(null);
+  };
+
+  const renderContent = () => {
+    if (loading) return <p>Searching...</p>;
+    if (error) return <p className="text-red-500">{error}</p>;
+    if (user) return <UserCard user={user} />;
+    return <p>Enter a username to search.</p>;
+  };
 
   return (
     <>
-      <header className="flex justify-center w-full py-5 border-2 border-red-500 h-[20vh]">
-        <SearchBar setUsername={setUsername} /> {/* Pass setUsername as prop */}
+      <header className="flex justify-center w-full py-5 h-[20vh]">
+        <SearchBar setUsername={setUsername} />
       </header>
 
-      <main className="flex justify-center w-full min-h-[70vh] border-2">
-        {error ? (
-          <p>{error}</p>
-        ) : user ? (
-          <UserCard user={user} /> // Pass user data to UserCard component
-        ) : (
-          <p>Loading...</p>
-        )}
+      <main className="flex justify-center w-full min-h-[70vh]">
+        {renderContent()}
       </main>
 
-      <footer className="flex justify-center items-center h-[10vh] border-2">
+      <footer className="flex justify-center items-center h-[10vh]">
         <button
           className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-          onClick={() => setUsername("")} // Clear search input
+          onClick={handleClear}
         >
           Clear
         </button>
