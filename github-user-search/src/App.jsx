@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import SearchBar from "./components/SearchBar";
+import SearchBar from "./components/Search";
 import UserCard from "./components/UserCard";
 import GetUserData from "./services/githubservice.js"; // Ensure file name is correct
 
