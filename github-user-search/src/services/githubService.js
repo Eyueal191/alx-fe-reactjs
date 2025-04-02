@@ -2,7 +2,7 @@ import axios from "axios";
 
 const GITHUB_API_URL = import.meta.env.VITE_GITHUB_API_URL;
 
-async function GetUserData(username) {
+async function fetchUserData(username) {
   try {
     const url = `${GITHUB_API_URL}/users/${username}`;
     const res = await axios.get(url);

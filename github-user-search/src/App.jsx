@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "./components/Search";
 import UserCard from "./components/UserCard";
-import GetUserData from "./services/githubService.js"; // Ensure the file exists
+import fetchUserData from "./services/githubService.js"; // Ensure the file exists
 
 function App() {
   const [username, setUsername] = useState(""); // Input username
@@ -16,10 +16,10 @@ function App() {
       return;
     }
 
-    const fetchUserData = async () => {
+    const GetUserData = async () => {
       setLoading(true);
       try {
-        const data = await GetUserData(username);
+        const data = await fetchUserData(username);
         setUser(data);
         setError(null);
       } catch (err) {
@@ -30,7 +30,7 @@ function App() {
       }
     };
 
-    fetchUserData();
+    GetUserData();
   }, [username]);
 
   const handleClear = () => {
