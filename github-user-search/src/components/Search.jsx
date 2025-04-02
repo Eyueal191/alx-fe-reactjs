@@ -4,8 +4,7 @@ function SearchBar({ setUsername }) {
   // Submit handler
   function submithandler(e) {
     e.preventDefault();
-    let formdata = new FormData(e.target);
-    let value = formdata.get("username");
+    const value = e.target.username.value; // Access value directly
     setUsername(value);
   }
 
