@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 
 function SearchBar({ setUsername }) {
+  const [inputValue, setInputValue] = useState(""); // Local state for input field
+
   // Submit handler
   function submithandler(e) {
     e.preventDefault();
-    const value = e.target.username.value; // Access value directly
-    setUsername(value);
+    setUsername(inputValue); // Pass the local state to parent
   }
 
   return (
@@ -18,6 +19,8 @@ function SearchBar({ setUsername }) {
         <input
           type="text"
           name="username"
+          value={inputValue} // Controlled input
+          onChange={(e) => setInputValue(e.target.value)} // Update local state
           placeholder="Enter username..."
           className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
