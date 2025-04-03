@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function SearchBar({ setUsername }) {
+function SearchBar({ setUsername, user, loading }) {
   const [inputValue, setInputValue] = useState(""); // Local state for input field
 
   // Submit handler
@@ -36,6 +36,24 @@ function SearchBar({ setUsername }) {
           Search
         </button>
       </div>
+
+      {/* Display User Info */}
+      {user ? (
+        <div className="text-center mt-6">
+          <img
+            src={user.avatar_url}
+            alt={user.login}
+            className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-md mb-4"
+          />
+          <h3 className="text-xl font-bold text-gray-800">{user.name}</h3>
+          <p className="text-lg text-gray-600">@{user.login}</p>
+          <p className="text-sm text-gray-500">{user.bio}</p>
+        </div>
+      ) : loading ? (
+        <p className="text-white">Loading...</p>
+      ) : (
+        <p className="text-white">Looks like we can't find the user.</p>
+      )}
     </form>
   );
 }
