@@ -6,6 +6,7 @@ function SearchBar() {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [error, setError] = useState(null); // Error state
   const [repos, setRepos] = useState([]); // Repositories data
+  const [location, setLocation] = useState(""); // Location filter
 
   // Function to fetch user data and repositories from GitHub API
   const fetchUserData = async (username) => {
@@ -15,23 +16,23 @@ function SearchBar() {
     setRepos([]); // Clear previous repos
 
     try {
-      // Fetch user data
+      // Fetch user data with location filter
       const userResponse = await fetch(
-        `https://api.github.com/users/${username}`
+        `https://api.github.com/search/users?q=${username}+location:${location}`
       );
       if (!userResponse.ok) throw new Error("User not found");
 
       const userData = await userResponse.json();
-      setUser(userData);
+      setUser(userData.items[0]); // We take the first user match
 
       // Fetch repositories data
-      const reposResponse = await fetch(userData.repos_url);
+      const reposResponse = await fetch(userData.items[0].repos_url);
       if (!reposResponse.ok) throw new Error("Repositories not found");
 
       const reposData = await reposResponse.json();
       setRepos(reposData);
     } catch (error) {
-      setError("Looks like we cant find the user or their repositories");
+      setError("Looks like we can't find the user or their repositories");
     } finally {
       setIsLoading(false);
     }
@@ -58,6 +59,14 @@ function SearchBar() {
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Enter GitHub username"
           className="border-2 border-gray-300 rounded-l-lg p-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+        />
+        <input
+          type="text"
+          name="location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder="Enter location (optional)"
+          className="border-2 border-gray-300 p-2 w-1/4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
         />
         <button
           type="submit"
