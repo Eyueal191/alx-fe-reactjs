@@ -1,48 +1,54 @@
 import React, { useState } from "react";
 
-function SearchBar() {
-  const [inputValue, setInputValue] = useState(""); // Input field value
-  const [user, setUser] = useState(null); // User data from GitHub
-  const [isLoading, setIsLoading] = useState(false); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [repos, setRepos] = useState([]); // Repositories data
-  const [location, setLocation] = useState(""); // Location filter
+// Custom Hook for User Data Fetching
+const useGitHubSearch = (username, location) => {
+  const [user, setUser] = useState(null);
+  const [repos, setRepos] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Function to fetch user data and repositories from GitHub API
-  const fetchUserData = async (username) => {
+  const fetchUserData = async () => {
     setIsLoading(true);
     setError(null);
     setUser(null);
-    setRepos([]); // Clear previous repos
+    setRepos([]);
 
     try {
-      // Fetch user data with location filter
       const userResponse = await fetch(
         `https://api.github.com/search/users?q=${username}+location:${location}`
       );
       if (!userResponse.ok) throw new Error("User not found");
 
       const userData = await userResponse.json();
-      setUser(userData.items[0]); // We take the first user match
+      setUser(userData.items[0]); // First user match
 
-      // Fetch repositories data
       const reposResponse = await fetch(userData.items[0].repos_url);
       if (!reposResponse.ok) throw new Error("Repositories not found");
 
       const reposData = await reposResponse.json();
       setRepos(reposData);
     } catch (error) {
-      setError("Looks like we can't find the user or their repositories");
+      setError("Looks like we can't find the user or their repositories.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Submit handler for form
+  return { user, repos, isLoading, error, fetchUserData };
+};
+
+function SearchBar() {
+  const [inputValue, setInputValue] = useState("");
+  const [location, setLocation] = useState("");
+  const { user, repos, isLoading, error, fetchUserData } = useGitHubSearch(
+    inputValue,
+    location
+  );
+
   const submitHandler = (event) => {
     event.preventDefault();
     if (inputValue.trim()) {
-      fetchUserData(inputValue);
+      fetchUserData();
     }
   };
 
@@ -51,6 +57,7 @@ function SearchBar() {
       <form
         onSubmit={submitHandler}
         className="mb-8 flex justify-center space-x-2"
+        aria-live="polite"
       >
         <input
           type="text"
@@ -59,6 +66,7 @@ function SearchBar() {
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Enter GitHub username"
           className="border-2 border-gray-300 rounded-l-lg p-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+          aria-label="GitHub username"
         />
         <input
           type="text"
@@ -67,10 +75,12 @@ function SearchBar() {
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Enter location (optional)"
           className="border-2 border-gray-300 p-2 w-1/4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+          aria-label="Location filter"
         />
         <button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+          aria-label="Search"
         >
           Search
         </button>
@@ -78,6 +88,7 @@ function SearchBar() {
 
       {isLoading && <p className="text-blue-500 text-center">Loading...</p>}
       {error && <p className="text-red-500 text-center">{error}</p>}
+
       {user && (
         <div className="max-w-sm mx-auto bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
           <div className="flex justify-center pt-4">
