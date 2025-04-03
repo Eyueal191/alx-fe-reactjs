@@ -1,12 +1,35 @@
 import React, { useState } from "react";
 
-function SearchBar({ setUsername, user, isLoading, error }) {
-  const [inputValue, setInputValue] = useState("");
+function SearchBar() {
+  const [inputValue, setInputValue] = useState(""); // Input field value
+  const [user, setUser] = useState(null); // User data from GitHub
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [error, setError] = useState(null); // Error state
 
+  // Function to fetch user data from GitHub API
+  const fetchUserData = async (username) => {
+    setIsLoading(true);
+    setError(null);
+    setUser(null); // Clear previous user data when searching
+
+    try {
+      const response = await fetch(`https://api.github.com/users/${username}`);
+      if (!response.ok) throw new Error("User not found");
+
+      const data = await response.json();
+      setUser(data);
+    } catch (error) {
+      setError("Looks like we can't find the user");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Submit handler for form
   const submitHandler = (event) => {
     event.preventDefault();
     if (inputValue.trim()) {
-      setUsername(inputValue);
+      fetchUserData(inputValue);
     }
   };
 
@@ -33,12 +56,8 @@ function SearchBar({ setUsername, user, isLoading, error }) {
       </form>
 
       {isLoading && <p className="text-blue-500 text-center">Loading...</p>}
-      {error && (
-        <p className="text-red-500 text-center">
-          Looks like we can't find the user
-        </p>
-      )}
-      {user ? (
+      {error && <p className="text-red-500 text-center">{error}</p>}
+      {user && (
         <div className="max-w-sm mx-auto bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
           <div className="flex justify-center pt-4">
             <img
@@ -82,14 +101,6 @@ function SearchBar({ setUsername, user, isLoading, error }) {
             </div>
           </div>
         </div>
-      ) : (
-        !isLoading &&
-        !error &&
-        inputValue.trim() && (
-          <p className="text-red-500 text-center">
-            Looks like we cant find the user
-          </p>
-        )
       )}
     </div>
   );
