@@ -33,7 +33,11 @@ function SearchBar({ setUsername, user, isLoading, error }) {
       </form>
 
       {isLoading && <p className="text-blue-500 text-center">Loading...</p>}
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {error && (
+        <p className="text-red-500 text-center">
+          Looks like we can't find the user
+        </p>
+      )}
       {user && (
         <div className="max-w-sm mx-auto bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
           <div className="flex justify-center pt-4">
