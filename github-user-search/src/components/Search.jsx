@@ -19,7 +19,7 @@ function SearchBar() {
       const data = await response.json();
       setUser(data);
     } catch (error) {
-      setError("Looks like we can't find the user");
+      setError("Looks like we can't find the user"); // Corrected message
     } finally {
       setIsLoading(false);
     }
