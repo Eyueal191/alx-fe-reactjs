@@ -1,16 +1,13 @@
-import axios from "axios";
+const fetchUserData = async (username) => {
+  if (!username) throw new Error("Username is required");
 
-const GITHUB_API_URL = import.meta.env.VITE_GITHUB_API_URL;
+  const response = await fetch(`https://api.github.com/users/${username}`);
 
-async function fetchUserData(username) {
-  try {
-    const url = `${GITHUB_API_URL}/users/${username}`;
-    const res = await axios.get(url);
-    return res.data; // Return the actual user data
-  } catch (err) {
-    console.error("Error fetching user data:", err); // Log the error
-    throw err; // Throw the actual error to be handled in the calling function
+  if (!response.ok) {
+    throw new Error(`User "${username}" not found`);
   }
-}
 
-export default GetUserData;
+  return response.json();
+};
+
+export default fetchUserData;
