@@ -87,7 +87,7 @@ function SearchBar({ setUsername, user, isLoading, error }) {
         !error &&
         inputValue.trim() && (
           <p className="text-red-500 text-center">
-            Looks like we can't find the user
+            Looks like we cant find the user
           </p>
         )
       )}
