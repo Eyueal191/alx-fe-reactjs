@@ -1,6 +1,6 @@
 import axios from "axios";
 
-let baseUrl = import.meta.env.VITE_GITHUB_API_BASE_URL;
+let baseUrl = import.meta.env.VITE_GITHUB_API_BASE_URL || "https://api.github.com",;
 
 async function fetchUserData(username) {
   try {
