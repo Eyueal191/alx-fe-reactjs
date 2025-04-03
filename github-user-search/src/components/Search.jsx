@@ -5,21 +5,33 @@ function SearchBar() {
   const [user, setUser] = useState(null); // User data from GitHub
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [error, setError] = useState(null); // Error state
+  const [repos, setRepos] = useState([]); // Repositories data
 
-  // Function to fetch user data from GitHub API
+  // Function to fetch user data and repositories from GitHub API
   const fetchUserData = async (username) => {
     setIsLoading(true);
     setError(null);
-    setUser(null); // Clear previous user data when searching
+    setUser(null);
+    setRepos([]); // Clear previous repos
 
     try {
-      const response = await fetch(`https://api.github.com/users/${username}`);
-      if (!response.ok) throw new Error("User not found");
+      // Fetch user data
+      const userResponse = await fetch(
+        `https://api.github.com/users/${username}`
+      );
+      if (!userResponse.ok) throw new Error("User not found");
 
-      const data = await response.json();
-      setUser(data);
+      const userData = await userResponse.json();
+      setUser(userData);
+
+      // Fetch repositories data
+      const reposResponse = await fetch(userData.repos_url);
+      if (!reposResponse.ok) throw new Error("Repositories not found");
+
+      const reposData = await reposResponse.json();
+      setRepos(reposData);
     } catch (error) {
-      setError("Looks like we cant find the user"); // Corrected message
+      setError("Looks like we cant find the user or their repositories");
     } finally {
       setIsLoading(false);
     }
@@ -78,28 +90,38 @@ function SearchBar() {
             >
               View Profile
             </a>
-            <div className="mt-4 space-y-2">
-              <p className="text-gray-600 dark:text-gray-300">
-                <strong>Followers:</strong> {user.followers}
-              </p>
-              <p className="text-gray-600 dark:text-gray-300">
-                <strong>Repos:</strong> {user.public_repos}
-              </p>
-              {user.location && (
-                <p className="text-gray-600 dark:text-gray-300">
-                  <strong>Location:</strong> {user.location}
-                </p>
-              )}
-              {user.bio && (
-                <p className="text-gray-600 dark:text-gray-300">
-                  <strong>Bio:</strong> {user.bio}
-                </p>
-              )}
-              <p className="text-gray-600 dark:text-gray-300">
-                <strong>User Type:</strong> {user.type}
-              </p>
-            </div>
           </div>
+        </div>
+      )}
+
+      {repos.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold text-center">Repositories:</h3>
+          <ul className="space-y-4 mt-4">
+            {repos.map((repo) => (
+              <li
+                key={repo.id}
+                className="bg-gray-100 p-4 rounded-lg shadow-md"
+              >
+                <h4 className="text-lg font-semibold text-gray-800">
+                  <a
+                    href={repo.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    {repo.name}
+                  </a>
+                </h4>
+                <p className="text-gray-600">
+                  {repo.description || "No description available"}
+                </p>
+                <p className="text-gray-500 text-sm">
+                  Stars: {repo.stargazers_count}
+                </p>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
