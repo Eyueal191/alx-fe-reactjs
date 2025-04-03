@@ -11,11 +11,6 @@ const searchUsersUrl = "https://api.github.com/search/users?q=";
 async function searchUsers(query, location = "", minRepos = 0) {
   try {
     // Construct the search URL with the declared base search URL
-    const searchUrl = `${searchUsersUrl}${query}`;
-
-    // Log the URL to confirm it's using the search endpoint
-    console.log("GitHub Search URL:", searchUrl);
-
     // Add location filter if provided
     if (location) {
       const locationSearchUrl = `${searchUrl}+location:${location}`;
@@ -38,9 +33,6 @@ async function searchUsers(query, location = "", minRepos = 0) {
       return users;
     }
   } catch (error) {
-    // Log the error to the console for debugging
-    console.error("Error fetching users:", error);
-
     // Throw the error to handle it elsewhere if needed
     throw error;
   }
@@ -49,14 +41,10 @@ async function searchUsers(query, location = "", minRepos = 0) {
 // Function to fetch user data by username
 async function fetchUserData(username) {
   try {
-    const userUrl = `${baseUrl}/users/${username}`;
-    console.log("GitHub User Data URL:", userUrl); // Log the user URL for debugging
-
     let resp = await axios.get(userUrl);
     let data = resp.data;
     return data;
   } catch (error) {
-    console.error("Error fetching user data:", error);
     throw error;
   }
 }
