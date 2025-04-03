@@ -1,27 +1,39 @@
 import axios from "axios";
 
+// Define the base URL, either from environment variables or fallback to the default GitHub API URL
 let baseUrl =
   import.meta.env.VITE_GITHUB_API_BASE_URL || "https://api.github.com";
 
 // Function to search GitHub users based on query parameters
 async function searchUsers(query, location = "", minRepos = 0) {
   try {
-    // Construct the search URL
-    let searchUrl = `${baseUrl}/search/users?q=${query}`;
+    // Explicitly define the search URL string
+    const searchUrl = `${baseUrl}/search/users?q=${query}`;
+
+    // Log the URL to confirm it's using the search endpoint
+    console.log("GitHub Search URL:", searchUrl);
 
     // Add location filter if provided
     if (location) {
-      searchUrl += `+location:${location}`;
+      const locationSearchUrl = `${searchUrl}+location:${location}`;
+      console.log("GitHub Search URL with location:", locationSearchUrl);
+
+      // Make the GET request using Axios
+      let resp = await axios.get(locationSearchUrl);
+      let users = resp.data.items.filter(
+        (user) => user.public_repos >= minRepos
+      );
+
+      return users;
+    } else {
+      // Make the GET request using Axios without location
+      let resp = await axios.get(searchUrl);
+      let users = resp.data.items.filter(
+        (user) => user.public_repos >= minRepos
+      );
+
+      return users;
     }
-
-    // Make the GET request using Axios
-    let resp = await axios.get(searchUrl);
-
-    // Filter users with repositories greater than minRepos
-    let users = resp.data.items.filter((user) => user.public_repos >= minRepos);
-
-    // Return filtered users
-    return users;
   } catch (error) {
     // Log the error to the console for debugging
     console.error("Error fetching users:", error);
@@ -34,7 +46,10 @@ async function searchUsers(query, location = "", minRepos = 0) {
 // Function to fetch user data by username
 async function fetchUserData(username) {
   try {
-    let resp = await axios.get(`${baseUrl}/users/${username}`);
+    const userUrl = `${baseUrl}/users/${username}`;
+    console.log("GitHub User Data URL:", userUrl); // Log the user URL for debugging
+
+    let resp = await axios.get(userUrl);
     let data = resp.data;
     return data;
   } catch (error) {
