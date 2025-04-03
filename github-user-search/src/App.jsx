@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import fetchUserData from "./services/githubService";
-import SearchBar from "./components/SearchBar";
+import SearchBar from "./components/Search.jsx";
 
 function App() {
   const [username, setUsername] = useState("");
