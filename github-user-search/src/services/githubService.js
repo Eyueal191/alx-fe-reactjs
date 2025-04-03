@@ -4,11 +4,14 @@ import axios from "axios";
 let baseUrl =
   import.meta.env.VITE_GITHUB_API_BASE_URL || "https://api.github.com";
 
+// Explicitly declare the search URL as a string
+const searchUsersUrl = "https://api.github.com/search/users?q=";
+
 // Function to search GitHub users based on query parameters
 async function searchUsers(query, location = "", minRepos = 0) {
   try {
-    // Explicitly define the search URL string
-    const searchUrl = `${baseUrl}/search/users?q=${query}`;
+    // Construct the search URL with the declared base search URL
+    const searchUrl = `${searchUsersUrl}${query}`;
 
     // Log the URL to confirm it's using the search endpoint
     console.log("GitHub Search URL:", searchUrl);
