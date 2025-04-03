@@ -85,6 +85,7 @@ function SearchBar() {
               src={user.avatar_url}
               alt={`${user.login}'s avatar`}
               className="h-32 w-32 rounded-full border-4 border-white dark:border-gray-800"
+              loading="lazy"
             />
           </div>
           <div className="text-center py-4">
