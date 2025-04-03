@@ -38,7 +38,7 @@ function SearchBar({ setUsername, user, isLoading, error }) {
           Looks like we can't find the user
         </p>
       )}
-      {user && (
+      {user ? (
         <div className="max-w-sm mx-auto bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
           <div className="flex justify-center pt-4">
             <img
@@ -82,6 +82,14 @@ function SearchBar({ setUsername, user, isLoading, error }) {
             </div>
           </div>
         </div>
+      ) : (
+        !isLoading &&
+        !error &&
+        inputValue.trim() && (
+          <p className="text-red-500 text-center">
+            Looks like we can't find the user
+          </p>
+        )
       )}
     </div>
   );
